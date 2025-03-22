@@ -1,6 +1,6 @@
 const log = console.log;
 
-const canvasSize = 2000;
+const canvasSize = 200;
 
 // Create main Konva stage (canvas)
 const stage = new Konva.Stage({
