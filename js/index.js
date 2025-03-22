@@ -33,6 +33,45 @@ Konva.Image.fromURL('/base_news_template.png', function (bg) {
     baseLayer.draw();
 });
 
+let lastDist = 0;
+let scale = 1;
+
+stage.on('touchmove', function (e) {
+    e.evt.preventDefault(); // prevents scrolling on touch devices
+
+    let touch1 = e.evt.touches[0];
+    let touch2 = e.evt.touches[1];
+
+    if (touch1 && touch2) {
+        // calculate the distance between two fingers
+        let dist = Math.hypot(
+            touch1.clientX - touch2.clientX,
+            touch1.clientY - touch2.clientY
+        );
+
+        if (!lastDist) {
+            lastDist = dist;
+        }
+
+        // calculate new scale based on the ratio of distance
+        let scaleBy = dist / lastDist;
+
+        scale *= scaleBy;
+
+        // set scale limits if you want
+        scale = Math.max(0.2, Math.min(scale, 5));
+
+        userLayer.scale({ x: scale, y: scale });
+        userLayer.batchDraw();
+
+        lastDist = dist;
+    }
+});
+
+stage.on('touchend', function () {
+    lastDist = 0;
+});
+
 // Load user image (draggable and resizable)
 Konva.Image.fromURL('/user_uploaded_image.png', function (userImg) {
     console.log("User image loaded ✅");
