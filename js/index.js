@@ -33,43 +33,110 @@ Konva.Image.fromURL('/base_news_template.png', function (bg) {
     baseLayer.draw();
 });
 
+// let lastDist = 0;
+// let scale = 1;
+
+// stage.on('touchmove', function (e) {
+//     e.evt.preventDefault(); // prevents scrolling on touch devices
+
+//     let touch1 = e.evt.touches[0];
+//     let touch2 = e.evt.touches[1];
+
+//     if (touch1 && touch2) {
+//         // calculate the distance between two fingers
+//         let dist = Math.hypot(
+//             touch1.clientX - touch2.clientX,
+//             touch1.clientY - touch2.clientY
+//         );
+
+//         if (!lastDist) {
+//             lastDist = dist;
+//         }
+
+//         // calculate new scale based on the ratio of distance
+//         let scaleBy = dist / lastDist;
+
+//         scale *= scaleBy;
+
+//         // set scale limits if you want
+//         scale = Math.max(0.2, Math.min(scale, 5));
+
+//         userLayer.scale({ x: scale, y: scale });
+//         userLayer.batchDraw();
+
+//         lastDist = dist;
+//     }
+// });
+
+// stage.on('touchend', function () {
+//     lastDist = 0;
+// });
+
+
+// Better pinch zoom logic:
+let lastCenter = null;
 let lastDist = 0;
-let scale = 1;
 
 stage.on('touchmove', function (e) {
-    e.evt.preventDefault(); // prevents scrolling on touch devices
+    e.evt.preventDefault();
 
     let touch1 = e.evt.touches[0];
     let touch2 = e.evt.touches[1];
 
     if (touch1 && touch2) {
-        // calculate the distance between two fingers
-        let dist = Math.hypot(
-            touch1.clientX - touch2.clientX,
-            touch1.clientY - touch2.clientY
-        );
+        let p1 = {
+            x: touch1.clientX,
+            y: touch1.clientY
+        };
+        let p2 = {
+            x: touch2.clientX,
+            y: touch2.clientY
+        };
+
+        let dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        let center = {
+            x: (p1.x + p2.x) / 2,
+            y: (p1.y + p2.y) / 2,
+        };
 
         if (!lastDist) {
             lastDist = dist;
+            lastCenter = center;
+            return;
         }
 
-        // calculate new scale based on the ratio of distance
+        // Calculate scale factor based on pinch movement
         let scaleBy = dist / lastDist;
+        let oldScale = stage.scaleX();
+        let newScale = oldScale * scaleBy;
 
-        scale *= scaleBy;
+        // Limit scale
+        newScale = Math.max(0.5, Math.min(newScale, 5));
 
-        // set scale limits if you want
-        scale = Math.max(0.2, Math.min(scale, 5));
+        // Adjust stage position to keep pinch centered
+        let mousePointTo = {
+            x: (center.x - stage.x()) / oldScale,
+            y: (center.y - stage.y()) / oldScale,
+        };
 
-        userLayer.scale({ x: scale, y: scale });
-        userLayer.batchDraw();
+        stage.scale({ x: newScale, y: newScale });
+
+        let newPos = {
+            x: center.x - mousePointTo.x * newScale,
+            y: center.y - mousePointTo.y * newScale,
+        };
+
+        stage.position(newPos);
+        stage.batchDraw();
 
         lastDist = dist;
+        lastCenter = center;
     }
 });
 
 stage.on('touchend', function () {
     lastDist = 0;
+    lastCenter = null;
 });
 
 // Load user image (draggable and resizable)
