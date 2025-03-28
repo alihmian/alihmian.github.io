@@ -1,0 +1,9 @@
+{{ if .IsTranslated }}
+{{ range .Translations }}
+<!-- If you're on an English page, we show a link for Farsi. Vice versa. -->
+<a href="{{ .Permalink }}"
+    class="ml-4 px-2 py-1 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600">
+    {{ .Language.LanguageName }}
+</a>
+{{ end }}
+{{ end }}

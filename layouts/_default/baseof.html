@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ .Lang }}" {{- with $.Param "direction" -}} dir="{{.}}" {{- end }}>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ .Title }} | {{ .Site.Title }}</title>
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{{ "/css/site.css" | relURL }}">
+    <!-- Possibly other meta tags or icons -->
+    {{- partial "math.html" . -}}
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header / Nav -->
+        {{ partial "header.html" . }}
+
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            {{ partial "sidebar.html" . }}
+
+            <!-- Main content -->
+            <main class="flex-1 p-6 overflow-x-auto">
+                {{ block "main" . }}{{ end }}
+            </main>
+        </div>
+
+        <!-- Footer (optional) -->
+        <footer class="bg-gray-100 dark:bg-gray-800 text-center py-4 mt-auto">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                &copy; {{ now.Format "2006" }} {{ .Site.Title }}
+            </p>
+        </footer>
+    </div>
+</body>
+
+</html>
